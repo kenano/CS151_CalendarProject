@@ -6,12 +6,12 @@ import java.util.List;
 /**
  * Created by KenanO on 7/15/16.
  */
-public class ProjectCalendarDataModel {
+public class CalendarProjectDataModel {
 
     private List<String> mEventTitles;
     private List<ChangeListener> mUpdateViewListeners;
 
-    ProjectCalendarDataModel(){
+    CalendarProjectDataModel(){
         mEventTitles = new ArrayList<String>();
         mUpdateViewListeners =  new ArrayList<ChangeListener>();
 
