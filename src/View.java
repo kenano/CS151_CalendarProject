@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -25,6 +26,8 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import javafx.scene.shape.Box;
 
 
 /**
@@ -48,20 +51,29 @@ public class View implements ChangeListener {
 	private JLabel monthLabel = new JLabel();
 	private JPanel dayButtonPanel = new JPanel();
 	private ArrayList<JButton> dayButtons = new ArrayList<JButton>();
-
+	private JButton nextMonthButton = new JButton("Next Month");
+	private JButton previousMonthButton = new JButton("Previous Month");
+	private JButton todayButton = new JButton("Today's Date");
 
 	//Button Panel 
-	private JPanel buttonPanel = new JPanel();
+	private JPanel rightButtonPanel = new JPanel();
 	private JButton addEventButton = new JButton("Add Event");
 	private JButton quitButton = new JButton("Quit");
 	private JButton nextDayButton = new JButton("Next Day");
 	private JButton previousDayButton = new JButton("Previous Day");
+	
 
-
+	//View Button Panel 
+	private JPanel viewButtonsPanel = new JPanel();
+	private Box viewButtonsBox = new Box(); 
+	private JButton dayViewButton = new JButton("    Day   ");
+	private JButton weekViewButton = new JButton("  View   ");
+	private JButton monthViewButton = new JButton(" Month  ");
+	private JButton customViewButton = new JButton("Custom");
 
 	//Daily View (Right)
 	private JTextPane dailyEvents = new JTextPane();
-	private JLabel dayLabel = new JLabel(); 
+	private JLabel rightPanelLabel = new JLabel(); 
 
 	/**
 	 * Constructs the view for the Calendar.
@@ -73,6 +85,45 @@ public class View implements ChangeListener {
 		totalDays = model.getTotalDays();
 
 
+		nextMonthButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				model.nextMonth();
+
+			}
+		}
+				);
+
+		previousMonthButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				model.previousMonth();
+
+			}
+		}
+				);
+		
+		todayButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				model.previousMonth();
+
+			}
+		}
+				);
+		
+		JPanel leftButtonPanel = new JPanel(); 
+		leftButtonPanel.setLayout(new BorderLayout());
+		leftButtonPanel.add(todayButton, BorderLayout.WEST);
+		leftButtonPanel.add(previousMonthButton, BorderLayout.CENTER);
+		leftButtonPanel.add(nextMonthButton, BorderLayout.EAST);
+		
 		//Mini Calendar (Left)
 		miniCalendarPanel.setLayout(new BorderLayout());
 		monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
@@ -81,11 +132,16 @@ public class View implements ChangeListener {
 		dayButtonPanel.setLayout(new GridLayout(0, 7));
 		miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
 		
+		
 		createDayButtons();
 		addBlankButtons();
 		addDayButtons();
 		highlightSelectedDay(model.getDay() - 1);
 
+		JPanel leftSidePanel = new JPanel(); 
+		leftSidePanel.setLayout(new BorderLayout());
+		leftSidePanel.add(leftButtonPanel, BorderLayout.NORTH);
+		leftSidePanel.add(miniCalendarPanel, BorderLayout.SOUTH);
 
 		//Button Panel
 		addEventButton.addActionListener( new 
@@ -133,28 +189,80 @@ public class View implements ChangeListener {
 		}
 				);
 
-		buttonPanel.add(addEventButton);
-		buttonPanel.add(previousDayButton);
-		buttonPanel.add(nextDayButton);
-		buttonPanel.add(quitButton);
+		rightButtonPanel.add(addEventButton);
+		rightButtonPanel.add(previousDayButton);
+		rightButtonPanel.add(nextDayButton);
+		rightButtonPanel.add(quitButton);
+		
+		
+		
+		viewButtonsPanel.setLayout(new BoxLayout(viewButtonsPanel, BoxLayout.Y_AXIS));
+		dayViewButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				updateDayViewText(model.getDay());
+
+			}
+		}
+				);
+
+		weekViewButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				updateToWeekView();
+
+			}
+		}
+				);
+		
+		monthViewButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				updateToMonthView();
+
+			}
+		}
+				);
+		
+		customViewButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				updateToCustomView();
+
+			}
+		}
+				);
+		viewButtonsPanel.add(dayViewButton);
+		viewButtonsPanel.add(weekViewButton);
+		viewButtonsPanel.add(monthViewButton);
+		viewButtonsPanel.add(customViewButton);
 
 
 		//Daily View (Right)
-		JPanel dayViewPanel = new JPanel();
-		dayViewPanel.setLayout(new BorderLayout());
-		dayViewPanel.add(dayLabel, BorderLayout.NORTH);
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BorderLayout());
+		rightPanel.add(rightPanelLabel, BorderLayout.NORTH);
 		JScrollPane scroll = new JScrollPane(dailyEvents);
 		scroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		dayViewPanel.add(scroll, BorderLayout.CENTER);
-		dayViewPanel.add(buttonPanel, BorderLayout.SOUTH);
+		rightPanel.add(scroll, BorderLayout.CENTER);
+		rightPanel.add(rightButtonPanel, BorderLayout.SOUTH);
 		dailyEvents.setPreferredSize(new Dimension(600, 155));
 		dailyEvents.setEditable(false);
 		updateDayViewText(model.getDay());
+		rightPanel.add(viewButtonsPanel, BorderLayout.EAST);
 
 
 		//Add everything to frame
-		frame.add(miniCalendarPanel);
-		frame.add(dayViewPanel);
+		frame.add(leftSidePanel);
+		frame.add(rightPanel);
 		frame.setLayout(new FlowLayout());
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -244,13 +352,41 @@ public class View implements ChangeListener {
 		model.changeDay(x);
 		
 		String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
-		dayLabel.setText(dateForEvent);
+		rightPanelLabel.setText(dateForEvent);
 
 		String text = "";
 		if (model.hasEvents(model.dayToString())) {
 			text += model.getEvents(model.dayToString());
 		}
 		dailyEvents.setText(text);
+	}
+	
+	private void updateToWeekView()
+	{
+		//fill in 
+	}
+	
+	private void updateToMonthView()
+	{
+		rightPanelLabel.setText("" + monthArray[model.getMonth()] + model.getYear());
+		String text = ""; 
+		for (int i = 0; i < model.getTotalDays(); i++)
+		{
+			model.changeDay(i);
+			String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+			if (model.hasEvents(model.dayToString()))
+			{
+				text+= dateForEvent + "\n" + model.getEvents(model.dayToString());
+			}
+			dailyEvents.setText(text + "NOT WORKING");
+			
+			
+		}
+	}
+	
+	private void updateToCustomView()
+	{
+		
 	}
 
 
