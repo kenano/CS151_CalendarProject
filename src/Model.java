@@ -27,6 +27,7 @@ public class Model
 	private int totalDays;
 	private int selectedDay;
 	private boolean monthChange = false;
+	private int selectedMonth; 
 
 	/**
 	 * Constructor for the model which initiates totalDays, selectedDay, and loads events that have been added if they exist
@@ -35,6 +36,7 @@ public class Model
 	{
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		selectedDay = calendar.get(Calendar.DATE);
+		selectedMonth = calendar.get(Calendar.MONTH); 
 		load();
 	}
 
@@ -85,6 +87,7 @@ public class Model
 		//return calendar.get(Calendar.DAY);
 	}
 
+	
 	/**
 	 * Changes the day
 	 * @param x is the day selectedDay is being changed to
@@ -92,6 +95,15 @@ public class Model
 	public void changeDay(int x)
 	{
 		selectedDay = x; 
+	}
+	
+	/**
+	 * Changes the month
+	 * @param x is the month selectedMonth is being changed to
+	 */
+	public void changeMonth(int x)
+	{
+		selectedMonth = x; 
 	}
 
 	/**
@@ -125,6 +137,7 @@ public class Model
 	 * Moves the calendar to the next month 
 	 */
 	public void nextMonth() {
+		selectedMonth++; 
 		calendar.add(Calendar.MONTH, 1);
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		monthChange = true;
@@ -135,6 +148,7 @@ public class Model
 	 * Moves the calendar to the previous month
 	 */
 	public void previousMonth() {
+		selectedMonth--; 
 		calendar.add(Calendar.MONTH, -1);
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		monthChange = true;

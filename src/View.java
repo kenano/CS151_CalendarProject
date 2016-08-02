@@ -60,7 +60,7 @@ public class View implements ChangeListener {
 	//View Button Panel 
 	private JPanel viewButtonsPanel = new JPanel();
 	private JButton dayViewButton = new JButton("    Day   ");
-	private JButton weekViewButton = new JButton("  View   ");
+	private JButton weekViewButton = new JButton(" Week  ");
 	private JButton monthViewButton = new JButton(" Month  ");
 	private JButton customViewButton = new JButton("Custom");
 
@@ -279,6 +279,8 @@ public class View implements ChangeListener {
 			createDayButtons();
 			addBlankButtons();
 			addDayButtons();
+			updateDayViewText(1);
+			highlightSelectedDay(0);
 			lastSelected = -1;
 			model.resetMonthChange();
 			frame.pack();
@@ -356,7 +358,61 @@ public class View implements ChangeListener {
 	
 	private void updateToWeekView()
 	{
-		//fill in 
+		JDialog weekViewDialog = new JDialog(); 
+		weekViewDialog.setLayout(new BorderLayout());
+		weekViewDialog.add(new JLabel("Please enter the day you want Week View to start from"), BorderLayout.NORTH);
+		
+		JPanel weekFieldPanel = new JPanel(); 
+		weekFieldPanel.add(new JLabel ("Start Day")); 
+		JTextField weekViewField = new JTextField(); 
+		weekViewField.setPreferredSize(new Dimension(30, 20));
+		weekFieldPanel.add(weekViewField);
+		
+		
+		JButton close = new JButton("Close");
+		close.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				weekViewDialog.dispose();
+			}
+		});
+		
+		
+		JButton okayButton = new JButton("Okay");
+		okayButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int startDay = Integer.parseInt(weekViewField.getText());
+				weekViewDialog.dispose();
+				
+				rightPanelLabel.setText(monthArray[model.getMonth()] + " "+ startDay + " to " + monthArray[model.getMonth()] + " " + (startDay + 7)  );
+				String text = ""; 
+				for (int i = startDay; i < startDay + 7 + 1; i++)
+				{
+					model.changeDay(i);
+					String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+					if (model.hasEvents(model.dayToString()))
+					{
+						text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+					}
+					dailyEvents.setText(text );
+					model.changeDay(lastSelected + 1);
+					
+				}
+			}
+		});
+		
+		JPanel buttonPanel = new JPanel(); 
+		buttonPanel.setLayout(new FlowLayout());
+		buttonPanel.add(okayButton);
+		buttonPanel.add(close);
+		
+		weekViewDialog.add(weekFieldPanel, BorderLayout.CENTER);
+		weekViewDialog.add(buttonPanel, BorderLayout.SOUTH);
+		weekViewDialog.pack();
+		weekViewDialog.setVisible(true);
 	}
 	
 	private void updateToMonthView()
@@ -371,15 +427,98 @@ public class View implements ChangeListener {
 			{
 				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 			}
-			dailyEvents.setText(text + "NOT WORKING");
-			
+			dailyEvents.setText(text);
+			model.changeDay(lastSelected + 1);
 			
 		}
 	}
 	
 	private void updateToCustomView()
 	{
+		System.out.println("ahwiufhaw");
+		JDialog customViewDialog = new JDialog(); 
+		customViewDialog.setLayout(new BorderLayout());
+		customViewDialog.add(new JLabel("Please enter start and end date"), BorderLayout.NORTH);
 		
+		JPanel startDatePanel = new JPanel(); 
+			JTextField startMonthField = new JTextField(); 
+			startMonthField.setPreferredSize(new Dimension(30, 20));
+		
+			JTextField startDayField = new JTextField(); 
+			startDayField.setPreferredSize(new Dimension(30, 20));
+				
+			startDatePanel.add(new JLabel ("Start Month")); 
+			startDatePanel.add(startMonthField);
+			startDatePanel.add(new JLabel ("Start Day")); 
+			startDatePanel.add(startDayField);
+		
+			
+		JPanel endDatePanel = new JPanel(); 
+			JTextField endMonthField = new JTextField(); 
+			endMonthField.setPreferredSize(new Dimension(30, 20));
+		
+			JTextField endDayField = new JTextField(); 
+			endDayField.setPreferredSize(new Dimension(30, 20));
+				
+			endDatePanel.add(new JLabel ("End Month")); 
+			endDatePanel.add(endMonthField);
+			endDatePanel.add(new JLabel ("End Day")); 
+			endDatePanel.add(endDayField);	
+		
+			
+		JPanel fieldPanel = new JPanel(); 
+		fieldPanel.setLayout(new BorderLayout());
+		fieldPanel.add(startDatePanel, BorderLayout.NORTH);
+		fieldPanel.add(endDatePanel, BorderLayout.SOUTH);
+		
+		
+		
+		
+		
+		JButton close = new JButton("Close");
+		close.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				customViewDialog.dispose();
+			}
+		});
+		
+		
+		JButton okayButton = new JButton("Okay");
+		okayButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int startDay =1;
+				customViewDialog.dispose();
+				
+				rightPanelLabel.setText(monthArray[model.getMonth()] + " "+ startDay + " to " + monthArray[model.getMonth()] + " " + (startDay + 7)  );
+				String text = ""; 
+				for (int i = startDay; i < startDay + 7 + 1; i++)
+				{
+					model.changeDay(i);
+					String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+					if (model.hasEvents(model.dayToString()))
+					{
+						text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+					}
+					dailyEvents.setText(text );
+					model.changeDay(lastSelected + 1);
+					
+					
+				}
+			}
+		});
+		JPanel buttonPanel = new JPanel(); 
+		buttonPanel.setLayout(new FlowLayout());
+		buttonPanel.add(okayButton);
+		buttonPanel.add(close);
+		
+		customViewDialog.add(fieldPanel, BorderLayout.CENTER);
+		customViewDialog.add(buttonPanel, BorderLayout.SOUTH);
+		customViewDialog.pack();
+		customViewDialog.setVisible(true);
 	}
 
 
