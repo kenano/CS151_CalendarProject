@@ -1,18 +1,11 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -27,7 +20,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import javafx.scene.shape.Box;
+
 
 
 /**
@@ -54,6 +47,7 @@ public class View implements ChangeListener {
 	private JButton nextMonthButton = new JButton("Next Month");
 	private JButton previousMonthButton = new JButton("Previous Month");
 	private JButton todayButton = new JButton("Today's Date");
+	
 
 	//Button Panel 
 	private JPanel rightButtonPanel = new JPanel();
@@ -65,7 +59,6 @@ public class View implements ChangeListener {
 
 	//View Button Panel 
 	private JPanel viewButtonsPanel = new JPanel();
-	private Box viewButtonsBox = new Box(); 
 	private JButton dayViewButton = new JButton("    Day   ");
 	private JButton weekViewButton = new JButton("  View   ");
 	private JButton monthViewButton = new JButton(" Month  ");
@@ -368,15 +361,15 @@ public class View implements ChangeListener {
 	
 	private void updateToMonthView()
 	{
-		rightPanelLabel.setText("" + monthArray[model.getMonth()] + model.getYear());
+		rightPanelLabel.setText("" + monthArray[model.getMonth()] + "  " +  model.getYear());
 		String text = ""; 
-		for (int i = 0; i < model.getTotalDays(); i++)
+		for (int i = 1; i < model.getTotalDays() + 1; i++)
 		{
 			model.changeDay(i);
 			String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
 			if (model.hasEvents(model.dayToString()))
 			{
-				text+= dateForEvent + "\n" + model.getEvents(model.dayToString());
+				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 			}
 			dailyEvents.setText(text + "NOT WORKING");
 			
