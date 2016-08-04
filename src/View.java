@@ -1,7 +1,10 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,7 +63,7 @@ public class View implements ChangeListener {
 	//View Button Panel 
 	private JPanel viewButtonsPanel = new JPanel();
 	private JButton dayViewButton = new JButton("    Day   ");
-	private JButton weekViewButton = new JButton(" Week  ");
+	private JButton weekViewButton = new JButton("  Week  ");
 	private JButton monthViewButton = new JButton(" Month  ");
 	private JButton customViewButton = new JButton("Custom");
 
@@ -77,7 +80,97 @@ public class View implements ChangeListener {
 		this.model = model;
 		totalDays = model.getTotalDays();
 
+		//Initial popup dialog for strategy
+		
+		JDialog strategyDialog = new JDialog(frame, true);
+		strategyDialog.setAlwaysOnTop(true);
+		
+		
+		strategyDialog.setLayout(new BorderLayout());
+		strategyDialog.add(new JLabel("Please select the style you would like your calendar to have"), BorderLayout.NORTH);
 
+		JPanel strategyButtons = new JPanel(); 
+		
+
+		JButton smallBlue = new JButton("Blue: Small");
+		smallBlue.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.changeStrategy(new strategy1SmallBlue());
+				strategyDialog.dispose();
+				
+			}
+		});
+		
+		JButton bigBlue = new JButton("Blue: Big");
+		bigBlue.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.changeStrategy(new strategy2BigBlue());
+				strategyDialog.dispose();
+				
+			}
+		});
+		
+		JButton smallRed = new JButton("Red: Small");
+		smallRed.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.changeStrategy(new strategy3SmallRed());
+				strategyDialog.dispose();
+				
+			}
+		});
+		
+		JButton bigRed = new JButton("Red: Big");
+		bigRed.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.changeStrategy(new strategy4BigRed());
+				strategyDialog.dispose();
+				
+			}
+		});
+		
+		JButton smallGreen = new JButton("Green: Small");
+		smallGreen.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.changeStrategy(new strategy5SmallGreen());
+				strategyDialog.dispose();
+				
+			}
+		});
+		
+		JButton bigGreen = new JButton("Green: Big");
+		bigGreen.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.changeStrategy(new strategy6BigGreen());
+				strategyDialog.dispose();
+				
+			}
+		});
+		strategyButtons.add(smallBlue);
+		strategyButtons.add(bigBlue);
+		strategyButtons.add(smallRed);
+		strategyButtons.add(bigRed);
+		strategyButtons.add(smallGreen);
+		strategyButtons.add(bigGreen);
+		strategyButtons.setSize(frame.getSize());
+		
+		strategyDialog.setLayout(new BorderLayout());
+		strategyDialog.add(strategyButtons, BorderLayout.CENTER);
+		strategyDialog.pack();
+		strategyDialog.setVisible(true);
+		
+		nextMonthButton.setBackground(model.getStrategy().getButtonColor());
 		nextMonthButton.addActionListener( new 
 				ActionListener()
 		{
@@ -88,7 +181,7 @@ public class View implements ChangeListener {
 			}
 		}
 				);
-
+		previousMonthButton.setBackground(model.getStrategy().getButtonColor());
 		previousMonthButton.addActionListener( new 
 				ActionListener()
 		{
@@ -99,7 +192,7 @@ public class View implements ChangeListener {
 			}
 		}
 				);
-
+		todayButton.setBackground(model.getStrategy().getButtonColor());
 		todayButton.addActionListener( new 
 				ActionListener()
 		{
@@ -121,12 +214,13 @@ public class View implements ChangeListener {
 			leftButtonPanel.add(todayButton, BorderLayout.WEST);
 			leftButtonPanel.add(previousMonthButton, BorderLayout.CENTER);
 			leftButtonPanel.add(nextMonthButton, BorderLayout.EAST);
+			
 
 			//Mini Calendar (LeftSub)
 			miniCalendarPanel.setLayout(new BorderLayout());
-			monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
+			monthLabel.setText( monthArray[model.getMonth()] + " " + model.getYear());
 			miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
-			miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
+			miniCalendarPanel.add(new JLabel(model.getStrategy().getSunMonLabel()), BorderLayout.CENTER);
 			dayButtonPanel.setLayout(new GridLayout(0, 7));
 			miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
 			createDayButtons();
@@ -139,6 +233,7 @@ public class View implements ChangeListener {
 		
 
 		//Right Button Panel
+		addEventButton.setBackground(model.getStrategy().getButtonColor());
 		addEventButton.addActionListener( new 
 				ActionListener()
 		{
@@ -150,6 +245,7 @@ public class View implements ChangeListener {
 		}
 				);
 
+		quitButton.setBackground(model.getStrategy().getButtonColor());
 		quitButton.addActionListener( new 
 				ActionListener()
 		{
@@ -162,6 +258,7 @@ public class View implements ChangeListener {
 		}
 				);
 
+		nextDayButton.setBackground(model.getStrategy().getButtonColor());
 		nextDayButton.addActionListener( new 
 				ActionListener()
 		{
@@ -173,6 +270,7 @@ public class View implements ChangeListener {
 		}
 				);
 
+		previousDayButton.setBackground(model.getStrategy().getButtonColor());
 		previousDayButton.addActionListener( new 
 				ActionListener()
 		{
@@ -192,6 +290,8 @@ public class View implements ChangeListener {
 
 		//View buttons panel
 		viewButtonsPanel.setLayout(new BoxLayout(viewButtonsPanel, BoxLayout.Y_AXIS));
+		
+		dayViewButton.setBackground(model.getStrategy().getButtonColor());
 		dayViewButton.addActionListener( new 
 				ActionListener()
 		{
@@ -203,6 +303,7 @@ public class View implements ChangeListener {
 		}
 				);
 
+		weekViewButton.setBackground(model.getStrategy().getButtonColor());
 		weekViewButton.addActionListener( new 
 				ActionListener()
 		{
@@ -214,6 +315,7 @@ public class View implements ChangeListener {
 		}
 				);
 
+		monthViewButton.setBackground(model.getStrategy().getButtonColor());
 		monthViewButton.addActionListener( new 
 				ActionListener()
 		{
@@ -225,6 +327,7 @@ public class View implements ChangeListener {
 		}
 				);
 
+		customViewButton.setBackground(model.getStrategy().getButtonColor());
 		customViewButton.addActionListener( new 
 				ActionListener()
 		{
@@ -249,7 +352,7 @@ public class View implements ChangeListener {
 			rightPanel.add(rightPanelLabel, BorderLayout.NORTH);
 		
 			//Event text
-			dailyEvents.setPreferredSize(new Dimension(600, 155));
+			dailyEvents.setPreferredSize(model.getStrategy().getTextDimension());
 			dailyEvents.setEditable(false);
 			JScrollPane scroll = new JScrollPane(dailyEvents);
 			scroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -266,10 +369,34 @@ public class View implements ChangeListener {
 		//Add everything to frame
 		frame.add(leftSidePanel);
 		frame.add(rightPanel);
+		
+		
+		
 		frame.setLayout(new FlowLayout());
+		
+		changeFont(frame, model.getStrategy().getFont());
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+	}
+	
+	
+	/**
+	 * Changes the font of all components to a certain font (looked it up online and adapted)
+	 * @param c the component 
+	 * @param strategyFont the font you want to use
+	 */
+	public void changeFont( Component c, Font strategyFont)
+	{
+		
+		c.setFont(strategyFont);
+		if (c instanceof Container)
+		{
+			for (Component child: ( (Container) c).getComponents())
+			{
+				changeFont( child, strategyFont);
+			}
+		}
 	}
 	@Override
 	public void stateChanged(ChangeEvent e) {
@@ -295,9 +422,11 @@ public class View implements ChangeListener {
 		dayButtonPanel.removeAll();
 		dayButtonPanel.setLayout(new GridLayout(0, 7));
 		miniCalendarPanel.removeAll();
+		monthLabel.setFont(model.getStrategy().getFont());
 		monthLabel.setText(monthArray[model.getMonth()] + " " + model.getYear());
+		changeFont(miniCalendarPanel, model.getStrategy().getFont());
 		miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
-		miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
+		miniCalendarPanel.add(new JLabel(model.getStrategy().getSunMonLabel()), BorderLayout.CENTER);
 		miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
 		monthLabel.setText(monthArray[model.getMonth()] + " " + model.getYear());
 		createDayButtons();
@@ -318,6 +447,7 @@ public class View implements ChangeListener {
 		for (int i = 1; i <= totalDays; i++) {
 			final int x = i;
 			JButton dayButton = new JButton(Integer.toString(i));
+			
 			dayButton.setBackground(Color.WHITE);
 
 			dayButton.addActionListener(new ActionListener() {
@@ -349,6 +479,7 @@ public class View implements ChangeListener {
 	private void addBlankButtons() {
 		for (int i = 1; i < model.getDayOfWeek(1); i++) {
 			JButton blankButton = new JButton();
+			blankButton.setSize(model.getStrategy().getTextDimension());
 			blankButton.setBackground(Color.WHITE);
 			dayButtonPanel.add(blankButton);
 		}
@@ -365,17 +496,20 @@ public class View implements ChangeListener {
 
 		String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
 		rightPanelLabel.setText(dateForEvent);
+		
 
 		String text = "";
 		if (model.hasEvents(model.dayToString())) {
 			text += model.getEvents(model.dayToString());
 		}
 		dailyEvents.setText(text);
+		changeFont(frame, model.getStrategy().getFont());
 	}
 
 	private void updateToWeekView()
 	{
 		JDialog weekViewDialog = new JDialog(); 
+	
 		weekViewDialog.setLayout(new BorderLayout());
 		weekViewDialog.add(new JLabel("Please enter the day you want Week View to start from"), BorderLayout.NORTH);
 
@@ -437,6 +571,7 @@ public class View implements ChangeListener {
 
 		weekViewDialog.add(weekFieldPanel, BorderLayout.CENTER);
 		weekViewDialog.add(buttonPanel, BorderLayout.SOUTH);
+		changeFont(weekViewDialog, model.getStrategy().getFont());
 		weekViewDialog.pack();
 		weekViewDialog.setVisible(true);
 	}
@@ -461,6 +596,7 @@ public class View implements ChangeListener {
 		*/
 		dailyEvents.setText(getMonthText(model.getMonth()));
 		model.changeDay(lastSelected + 1);
+		
 		
 	}
 
@@ -544,37 +680,8 @@ public class View implements ChangeListener {
 						}
 					}
 				}
-				/*
-				else if ( Math.abs(startMonth - endMonth) == 1 )
-				{
-					model.changeMonth(startMonth);
-					for (int i = model.getDay(); i < model.getTotalDays() + 1; i++)
-					{
-						model.changeDay(i);
-						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
-						if (model.hasEvents(model.dayToString()))
-						{
-							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
-						}
-					}
-					
-					model.changeMonth(endMonth);
-					
 				
-					
-					
-					for (int i = 1; i < endDay + 1; i++)
-					{
-						model.changeDay(i);
-						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
-						if (model.hasEvents(model.dayToString()))
-						{
-							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
-						}
-					}
-				}
-				*/
-				else //more than 2 months
+				else //multiple months
 				{
 					int currentMonth = startMonth; 
 					model.changeMonth(startMonth);
@@ -623,6 +730,7 @@ public class View implements ChangeListener {
 
 		customViewDialog.add(fieldPanel, BorderLayout.CENTER);
 		customViewDialog.add(buttonPanel, BorderLayout.SOUTH);
+		changeFont(customViewDialog, model.getStrategy().getFont());
 		customViewDialog.pack();
 		customViewDialog.setVisible(true);
 	}
@@ -655,8 +763,8 @@ public class View implements ChangeListener {
 	 */
 	private void highlightSelectedDay(int x) {
 
-		Color AirForceBlue = new Color(93, 138, 168);
-		Border border = new LineBorder(AirForceBlue, 4); 
+		Color highlightColor = model.getStrategy().getHighLightColor();
+		Border border = new LineBorder(highlightColor, 4); 
 		dayButtons.get(x).setBorder(border);
 		if (lastSelected != -1) {
 			dayButtons.get(lastSelected).setBorder(new JButton().getBorder());
