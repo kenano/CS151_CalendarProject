@@ -1,5 +1,18 @@
+
 import java.io.*;
 import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -17,8 +30,15 @@ public class Model
 	private ArrayList<ChangeListener> listeners = new ArrayList<>();
 	private HashMap<String, ArrayList<Event>> eventMap = new HashMap<>();
 	private int totalDays;
-	private int selectedDay;
+	
 	private boolean monthChange = false;
+	
+	private int selectedDay;
+	private int selectedMonth;
+	private int selectedYear; 
+	private final int todaysDay;
+	private final int todaysMonth; 
+	private final int todaysYear; 
 
 	/**
 	 * Constructor for the model which initiates totalDays, selectedDay, and loads events that have been added if they exist
@@ -30,6 +50,14 @@ public class Model
 
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		selectedDay = calendar.get(Calendar.DATE);
+		selectedMonth = calendar.get(Calendar.MONTH); 
+		selectedYear = calendar.get(Calendar.YEAR); 
+		
+		todaysDay = calendar.get(Calendar.DATE);
+		todaysMonth = calendar.get(Calendar.MONTH); 
+		todaysYear = calendar.get(Calendar.YEAR); 
+		
+		
 		load();
 	}
 
@@ -50,6 +78,25 @@ public class Model
 		{
 			listener.stateChanged(new ChangeEvent(this));
 		}
+	}
+	
+	public void changeToToday()
+	{
+		
+		changeDay(todaysDay);
+		changeMonth(todaysMonth);
+		changeYear(todaysYear);
+		
+		calendar.set(Calendar.DATE, todaysDay);
+		calendar.set(Calendar.MONTH, todaysMonth);
+		calendar.set(Calendar.YEAR, todaysYear);
+		
+		/*
+		System.out.println(todaysDay);
+		System.out.println(todaysMonth);
+		System.out.println(todaysYear);
+		*/
+		update(); 
 	}
 
 	/**
@@ -77,9 +124,10 @@ public class Model
 	public int getDay()
 	{
 		return selectedDay; 
-		//return calendar.get(Calendar.DAY);
+		//return calendar.get(Calendar.DATE);
 	}
 
+	
 	/**
 	 * Changes the day
 	 * @param x is the day selectedDay is being changed to
@@ -87,6 +135,43 @@ public class Model
 	public void changeDay(int x)
 	{
 		selectedDay = x; 
+		calendar.set(Calendar.DATE, x);
+	}
+	
+	/**
+	 * Changes the month
+	 * @param x is the month selectedMonth is being changed to
+	 */
+	public void changeMonth(int x)
+	{
+		selectedMonth = x; 
+		calendar.set(Calendar.MONTH, x - 1);
+		 /*
+		int difference = calendar.get(Calendar.MONTH - x);
+		if (difference > 0)
+		{
+			for (int i = 0; i < difference ; i ++)
+			{
+				previousMonth();
+			}
+		}
+		else
+		{
+			for (int i = 0; i < difference - 1; i ++)
+			{
+				nextMonth();
+			}
+		}
+		*/
+		
+		
+		
+	}
+	
+	public void changeYear(int x)
+	{
+		selectedYear = x; 
+		calendar.set(Calendar.YEAR, x);
 	}
 
 	/**
@@ -120,6 +205,7 @@ public class Model
 	 * Moves the calendar to the next month 
 	 */
 	public void nextMonth() {
+		selectedMonth++; 
 		calendar.add(Calendar.MONTH, 1);
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		monthChange = true;
@@ -130,6 +216,7 @@ public class Model
 	 * Moves the calendar to the previous month
 	 */
 	public void previousMonth() {
+		selectedMonth--; 
 		calendar.add(Calendar.MONTH, -1);
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		monthChange = true;
