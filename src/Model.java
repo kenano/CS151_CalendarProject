@@ -1,15 +1,5 @@
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.io.*;
+import java.util.*;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -21,6 +11,7 @@ import javax.swing.event.ChangeListener;
  */
 public class Model
 {
+	final static private String RECURRING_EVENTS_FILE_NAME = "input.txt";
 
 	private GregorianCalendar calendar = new GregorianCalendar();
 	private ArrayList<ChangeListener> listeners = new ArrayList<>();
@@ -34,6 +25,9 @@ public class Model
 	 */
 	public Model() 
 	{
+		//test loading file.
+		loadRecurringEventsFile();
+
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		selectedDay = calendar.get(Calendar.DATE);
 		load();
@@ -190,6 +184,8 @@ public class Model
 	 */
 	public void addEvent(String name, String start, String end)
 	{
+
+		System.out.println("here is what is passed into add event: " + name + " " + start + " " + end);
 
 		Event newEvent = new Event(name, start, end);  // create event with given values
 		if (hasEvents(dayToString())) // if there are already events that day
@@ -363,11 +359,118 @@ public class Model
 		return ( Integer.valueOf(time.substring(0,2)) * 60 ) + Integer.valueOf(time.substring(3)); 
 	}
 
-	
+	private void loadRecurringEventsFile(){
+		File recurring_events_file = new File(RECURRING_EVENTS_FILE_NAME);
+
+		try {
+			FileReader file_reader = new FileReader(recurring_events_file);
+			BufferedReader  buffered_reader = new BufferedReader(file_reader);
+
+			String next_line = "";
+			while((next_line = buffered_reader.readLine()) != null){
+				createRecurringEvent(next_line.split(";"));
+			}
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
+
+	private void createRecurringEvent(String[] recurring_event_attributes){
+
+		String title = recurring_event_attributes[0];
+		int year =  Integer.parseInt(recurring_event_attributes[1]);
+		int start_month = Integer.parseInt(recurring_event_attributes[2]);
+		int end_month = Integer.parseInt(recurring_event_attributes[3]);
+		String day = recurring_event_attributes[4];
+		String start_hour = recurring_event_attributes[5];
+		String end_hour = recurring_event_attributes[6];
+
+		HashSet<Integer> days = new HashSet<Integer>();
+
+
+		if(day.contains("S")){
+			days.add(Calendar.SUNDAY);
+		}if(day.contains("M")){
+			days.add(Calendar.MONDAY);
+		}if(day.contains("T")){
+			days.add(Calendar.TUESDAY);
+		}if(day.contains("W")){
+			days.add(Calendar.WEDNESDAY);
+		}if(day.contains("H")){
+			days.add(Calendar.THURSDAY);
+		}if(day.contains("F")){
+			days.add(Calendar.FRIDAY);
+		}if(day.contains("A")){
+			days.add(Calendar.SATURDAY);
+		}
+		GregorianCalendar event_date = new GregorianCalendar(year, start_month - 1,1);
+
+		Iterator<Integer> recurring_months = new SimpleCalendarUtilitiles().monthInYear(start_month - 1);
+
+		//go through all of the months for the recurring event
+		while(recurring_months.hasNext()){
+			Integer month = recurring_months.next();
+
+			//break out of outer loop after end_month is passed.
+			if(month > end_month - 1)
+				break;
+
+			event_date.set(Calendar.MONTH, month);
+
+			//create an iterator of days in a month.
+			Iterator<Integer> dates_in_month =
+				SimpleCalendarUtilitiles.datesInMonth(event_date.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+			//iterate through all of the dates of a month.
+			while(dates_in_month.hasNext()){
+
+				Integer date = dates_in_month.next();
+				event_date.set(Calendar.DATE, date);
+
+				if(days.contains(event_date.get(Calendar.DAY_OF_WEEK))){
+					System.out.println("recurring event date:" + event_date.getTime().toString());
+
+					//make a new arrayList for the days events.
+					ArrayList<Event> events = new ArrayList<>();
+
+					//create a new event
+					Event new_event = new Event(title, start_hour + ":00", end_hour + ":00");
+
+					//add the event to events.
+					events.add(new_event);
+
+
+					//construct key string
+					String key = Integer.toString(event_date.get(Calendar.MONTH))
+							+ Integer.toString(event_date.get(Calendar.DATE))
+							+ Integer.toString(event_date.get(Calendar.YEAR));
+
+					//add events to hash map, use get.calendar to construct key.
+					eventMap.put(key, events);
+				}
+			}
+		}
 
 
 
+//		Iterator<Integer> dates_in_month =
+//				SimpleCalendarUtilitiles.datesInMonth(event_date.getActualMaximum(Calendar.DAY_OF_MONTH));
+//
+//		while(dates_in_month.hasNext()){
+//
+//			Integer date = dates_in_month.next();
+//			event_date.set(Calendar.DATE, date);
+//
+//			if(days.contains(event_date.get(Calendar.DAY_OF_WEEK))){
+//				System.out.println("recurring event date:" + event_date.getTime().toString());
+//			}
+//		}
 
-
+	}
 
 }
