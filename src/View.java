@@ -110,33 +110,35 @@ public class View implements ChangeListener {
 			}
 		}
 				);
-
-		JPanel leftButtonPanel = new JPanel(); 
-		leftButtonPanel.setLayout(new BorderLayout());
-		leftButtonPanel.add(todayButton, BorderLayout.WEST);
-		leftButtonPanel.add(previousMonthButton, BorderLayout.CENTER);
-		leftButtonPanel.add(nextMonthButton, BorderLayout.EAST);
-
-		//Mini Calendar (Left)
-		miniCalendarPanel.setLayout(new BorderLayout());
-		monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
-		miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
-		miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
-		dayButtonPanel.setLayout(new GridLayout(0, 7));
-		miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
-
-
-		createDayButtons();
-		addBlankButtons();
-		addDayButtons();
-		highlightSelectedDay(model.getDay() - 1);
-
+		
+		//Left Panel
 		JPanel leftSidePanel = new JPanel(); 
 		leftSidePanel.setLayout(new BorderLayout());
+		
+			//today and month buttons (Left Sub)
+			JPanel leftButtonPanel = new JPanel(); 
+			leftButtonPanel.setLayout(new BorderLayout());
+			leftButtonPanel.add(todayButton, BorderLayout.WEST);
+			leftButtonPanel.add(previousMonthButton, BorderLayout.CENTER);
+			leftButtonPanel.add(nextMonthButton, BorderLayout.EAST);
+
+			//Mini Calendar (LeftSub)
+			miniCalendarPanel.setLayout(new BorderLayout());
+			monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
+			miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
+			miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
+			dayButtonPanel.setLayout(new GridLayout(0, 7));
+			miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
+			createDayButtons();
+			addBlankButtons();
+			addDayButtons();
+			highlightSelectedDay(model.getDay() - 1);
+		
 		leftSidePanel.add(leftButtonPanel, BorderLayout.NORTH);
 		leftSidePanel.add(miniCalendarPanel, BorderLayout.SOUTH);
+		
 
-		//Button Panel
+		//Right Button Panel
 		addEventButton.addActionListener( new 
 				ActionListener()
 		{
@@ -188,7 +190,7 @@ public class View implements ChangeListener {
 		rightButtonPanel.add(quitButton);
 
 
-
+		//View buttons panel
 		viewButtonsPanel.setLayout(new BoxLayout(viewButtonsPanel, BoxLayout.Y_AXIS));
 		dayViewButton.addActionListener( new 
 				ActionListener()
@@ -239,18 +241,26 @@ public class View implements ChangeListener {
 		viewButtonsPanel.add(customViewButton);
 
 
-		//Daily View (Right)
+		//Right Panel 
 		JPanel rightPanel = new JPanel();
 		rightPanel.setLayout(new BorderLayout());
-		rightPanel.add(rightPanelLabel, BorderLayout.NORTH);
-		JScrollPane scroll = new JScrollPane(dailyEvents);
-		scroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		rightPanel.add(scroll, BorderLayout.CENTER);
-		rightPanel.add(rightButtonPanel, BorderLayout.SOUTH);
-		dailyEvents.setPreferredSize(new Dimension(600, 155));
-		dailyEvents.setEditable(false);
-		updateDayViewText(model.getDay());
-		rightPanel.add(viewButtonsPanel, BorderLayout.EAST);
+		
+			//Label describing range of event text 
+			rightPanel.add(rightPanelLabel, BorderLayout.NORTH);
+		
+			//Event text
+			dailyEvents.setPreferredSize(new Dimension(600, 155));
+			dailyEvents.setEditable(false);
+			JScrollPane scroll = new JScrollPane(dailyEvents);
+			scroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+			rightPanel.add(scroll, BorderLayout.CENTER);
+			
+			//Right Button panel
+			rightPanel.add(rightButtonPanel, BorderLayout.SOUTH);
+			
+			updateDayViewText(model.getDay());
+			//View Button Panel
+			rightPanel.add(viewButtonsPanel, BorderLayout.EAST);
 
 
 		//Add everything to frame
@@ -263,7 +273,7 @@ public class View implements ChangeListener {
 	}
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
+	
 		if (model.getMonthChange()) 
 		{
 			remakeMiniCalendar(); 
@@ -271,8 +281,8 @@ public class View implements ChangeListener {
 
 		else 
 		{
-			updateDayViewText(model.getDay());
-			highlightSelectedDay(model.getDay() - 1);
+			updateDayViewText(model.getDay()); //change events to that day
+			highlightSelectedDay(model.getDay() - 1); //change highlight to selected day
 			
 			
 			
@@ -434,6 +444,7 @@ public class View implements ChangeListener {
 	private void updateToMonthView()
 	{
 		rightPanelLabel.setText("" + monthArray[model.getMonth()] + "  " +  model.getYear());
+		/*
 		String text = ""; 
 		for (int i = 1; i < model.getTotalDays() + 1; i++)
 		{
@@ -447,6 +458,10 @@ public class View implements ChangeListener {
 			model.changeDay(lastSelected + 1);
 
 		}
+		*/
+		dailyEvents.setText(getMonthText(model.getMonth()));
+		model.changeDay(lastSelected + 1);
+		
 	}
 
 	private void updateToCustomView()
@@ -529,7 +544,7 @@ public class View implements ChangeListener {
 						}
 					}
 				}
-				
+				/*
 				else if ( Math.abs(startMonth - endMonth) == 1 )
 				{
 					model.changeMonth(startMonth);
@@ -542,16 +557,7 @@ public class View implements ChangeListener {
 							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 						}
 					}
-					/*
-					if (startMonth > endMonth)
-					{
-						model.previousMonth();
-					}
-					else 
-					{
-						model.nextMonth();
-					}
-					*/
+					
 					model.changeMonth(endMonth);
 					
 				
@@ -567,7 +573,44 @@ public class View implements ChangeListener {
 						}
 					}
 				}
-				
+				*/
+				else //more than 2 months
+				{
+					int currentMonth = startMonth; 
+					model.changeMonth(startMonth);
+					for (int i = model.getDay(); i < model.getTotalDays() + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+					currentMonth++; 
+					
+					while (currentMonth < endMonth)
+						
+					{
+						model.changeMonth(currentMonth);
+						text+= getMonthText(currentMonth);
+						currentMonth++; 
+					}
+					
+						model.changeMonth(endMonth);
+										
+					
+					for (int i = 1; i < endDay + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+					
+				}
 				dailyEvents.setText(text );
 				model.changeDay(lastSelected + 1);
 				
@@ -584,8 +627,28 @@ public class View implements ChangeListener {
 		customViewDialog.setVisible(true);
 	}
 
-
-
+	/**
+	 * Gives the user the text for all the events in a month
+	 * @param month is the month you want
+	 * @return a String that is formatted events text for the whole month
+	 */
+	public String getMonthText(int month)
+	{
+		model.changeMonth(month + 1);
+	
+		String text = ""; 
+		for (int i = 1; i < model.getTotalDays() + 1; i++)
+		{
+			model.changeDay(i);
+			String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+			if (model.hasEvents(model.dayToString()))
+			{
+				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+			}
+		}
+		return text;
+ 
+	}
 	/**
 	 * Creates a thick border to highlight a certain day
 	 * @param x is the day to highLight
