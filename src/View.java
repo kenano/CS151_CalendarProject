@@ -1,18 +1,11 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
-
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -27,7 +20,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import javafx.scene.shape.Box;
+
 
 
 /**
@@ -42,7 +35,7 @@ public class View implements ChangeListener {
 	private int totalDays;
 	private DAYS[] dayArray = DAYS.values();
 	private MONTHS[] monthArray = MONTHS.values();
-	
+
 
 	private JFrame frame = new JFrame("Chien Simple GUI Calendar");
 
@@ -55,19 +48,19 @@ public class View implements ChangeListener {
 	private JButton previousMonthButton = new JButton("Previous Month");
 	private JButton todayButton = new JButton("Today's Date");
 
+
 	//Button Panel 
 	private JPanel rightButtonPanel = new JPanel();
 	private JButton addEventButton = new JButton("Add Event");
 	private JButton quitButton = new JButton("Quit");
 	private JButton nextDayButton = new JButton("Next Day");
 	private JButton previousDayButton = new JButton("Previous Day");
-	
+
 
 	//View Button Panel 
 	private JPanel viewButtonsPanel = new JPanel();
-	private Box viewButtonsBox = new Box(); 
 	private JButton dayViewButton = new JButton("    Day   ");
-	private JButton weekViewButton = new JButton("  View   ");
+	private JButton weekViewButton = new JButton(" Week  ");
 	private JButton monthViewButton = new JButton(" Month  ");
 	private JButton customViewButton = new JButton("Custom");
 
@@ -106,44 +99,46 @@ public class View implements ChangeListener {
 			}
 		}
 				);
-		
+
 		todayButton.addActionListener( new 
 				ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				model.previousMonth();
+				model.changeToToday();
 
 			}
 		}
 				);
 		
-		JPanel leftButtonPanel = new JPanel(); 
-		leftButtonPanel.setLayout(new BorderLayout());
-		leftButtonPanel.add(todayButton, BorderLayout.WEST);
-		leftButtonPanel.add(previousMonthButton, BorderLayout.CENTER);
-		leftButtonPanel.add(nextMonthButton, BorderLayout.EAST);
-		
-		//Mini Calendar (Left)
-		miniCalendarPanel.setLayout(new BorderLayout());
-		monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
-		miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
-		miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
-		dayButtonPanel.setLayout(new GridLayout(0, 7));
-		miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
-		
-		
-		createDayButtons();
-		addBlankButtons();
-		addDayButtons();
-		highlightSelectedDay(model.getDay() - 1);
-
+		//Left Panel
 		JPanel leftSidePanel = new JPanel(); 
 		leftSidePanel.setLayout(new BorderLayout());
+		
+			//today and month buttons (Left Sub)
+			JPanel leftButtonPanel = new JPanel(); 
+			leftButtonPanel.setLayout(new BorderLayout());
+			leftButtonPanel.add(todayButton, BorderLayout.WEST);
+			leftButtonPanel.add(previousMonthButton, BorderLayout.CENTER);
+			leftButtonPanel.add(nextMonthButton, BorderLayout.EAST);
+
+			//Mini Calendar (LeftSub)
+			miniCalendarPanel.setLayout(new BorderLayout());
+			monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
+			miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
+			miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
+			dayButtonPanel.setLayout(new GridLayout(0, 7));
+			miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
+			createDayButtons();
+			addBlankButtons();
+			addDayButtons();
+			highlightSelectedDay(model.getDay() - 1);
+		
 		leftSidePanel.add(leftButtonPanel, BorderLayout.NORTH);
 		leftSidePanel.add(miniCalendarPanel, BorderLayout.SOUTH);
+		
 
-		//Button Panel
+		//Right Button Panel
 		addEventButton.addActionListener( new 
 				ActionListener()
 		{
@@ -193,9 +188,9 @@ public class View implements ChangeListener {
 		rightButtonPanel.add(previousDayButton);
 		rightButtonPanel.add(nextDayButton);
 		rightButtonPanel.add(quitButton);
-		
-		
-		
+
+
+		//View buttons panel
 		viewButtonsPanel.setLayout(new BoxLayout(viewButtonsPanel, BoxLayout.Y_AXIS));
 		dayViewButton.addActionListener( new 
 				ActionListener()
@@ -218,7 +213,7 @@ public class View implements ChangeListener {
 			}
 		}
 				);
-		
+
 		monthViewButton.addActionListener( new 
 				ActionListener()
 		{
@@ -229,7 +224,7 @@ public class View implements ChangeListener {
 			}
 		}
 				);
-		
+
 		customViewButton.addActionListener( new 
 				ActionListener()
 		{
@@ -246,18 +241,26 @@ public class View implements ChangeListener {
 		viewButtonsPanel.add(customViewButton);
 
 
-		//Daily View (Right)
+		//Right Panel 
 		JPanel rightPanel = new JPanel();
 		rightPanel.setLayout(new BorderLayout());
-		rightPanel.add(rightPanelLabel, BorderLayout.NORTH);
-		JScrollPane scroll = new JScrollPane(dailyEvents);
-		scroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-		rightPanel.add(scroll, BorderLayout.CENTER);
-		rightPanel.add(rightButtonPanel, BorderLayout.SOUTH);
-		dailyEvents.setPreferredSize(new Dimension(600, 155));
-		dailyEvents.setEditable(false);
-		updateDayViewText(model.getDay());
-		rightPanel.add(viewButtonsPanel, BorderLayout.EAST);
+		
+			//Label describing range of event text 
+			rightPanel.add(rightPanelLabel, BorderLayout.NORTH);
+		
+			//Event text
+			dailyEvents.setPreferredSize(new Dimension(600, 155));
+			dailyEvents.setEditable(false);
+			JScrollPane scroll = new JScrollPane(dailyEvents);
+			scroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+			rightPanel.add(scroll, BorderLayout.CENTER);
+			
+			//Right Button panel
+			rightPanel.add(rightButtonPanel, BorderLayout.SOUTH);
+			
+			updateDayViewText(model.getDay());
+			//View Button Panel
+			rightPanel.add(viewButtonsPanel, BorderLayout.EAST);
 
 
 		//Add everything to frame
@@ -270,33 +273,42 @@ public class View implements ChangeListener {
 	}
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
+	
 		if (model.getMonthChange()) 
 		{
-			totalDays = model.getTotalDays();
-			dayButtons.clear();
-			dayButtonPanel.removeAll();
-			dayButtonPanel.setLayout(new GridLayout(0, 7));
-			miniCalendarPanel.removeAll();
-			monthLabel.setText("                                            " + monthArray[model.getMonth()] + " " + model.getYear());
-			miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
-			miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
-			miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
-			monthLabel.setText(monthArray[model.getMonth()] + " " + model.getYear());
-			createDayButtons();
-			addBlankButtons();
-			addDayButtons();
-			lastSelected = -1;
-			model.resetMonthChange();
-			frame.pack();
-			frame.repaint();
+			remakeMiniCalendar(); 
 		}
-		
+
 		else 
 		{
-			updateDayViewText(model.getDay());
-			highlightSelectedDay(model.getDay() - 1);
+			updateDayViewText(model.getDay()); //change events to that day
+			highlightSelectedDay(model.getDay() - 1); //change highlight to selected day
+			
+			
+			
 		}
+	}
+	public void remakeMiniCalendar()
+	{
+		totalDays = model.getTotalDays();
+		dayButtons.clear();
+		dayButtonPanel.removeAll();
+		dayButtonPanel.setLayout(new GridLayout(0, 7));
+		miniCalendarPanel.removeAll();
+		monthLabel.setText(monthArray[model.getMonth()] + " " + model.getYear());
+		miniCalendarPanel.add(monthLabel, BorderLayout.NORTH); 
+		miniCalendarPanel.add(new JLabel("    Sun         Mon        Tue         Wed       Thu           Fri          Sat"), BorderLayout.CENTER);
+		miniCalendarPanel.add(dayButtonPanel, BorderLayout.SOUTH);
+		monthLabel.setText(monthArray[model.getMonth()] + " " + model.getYear());
+		createDayButtons();
+		addBlankButtons();
+		addDayButtons();
+		updateDayViewText(1);
+		model.changeDay(1); 
+		lastSelected = -1;
+		model.resetMonthChange();
+		frame.pack();
+		frame.repaint();
 	}
 
 	/**
@@ -317,7 +329,7 @@ public class View implements ChangeListener {
 
 				}
 			});
-			
+
 			dayButtons.add(dayButton);
 		}
 	}
@@ -350,7 +362,7 @@ public class View implements ChangeListener {
 
 
 		model.changeDay(x);
-		
+
 		String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
 		rightPanelLabel.setText(dateForEvent);
 
@@ -360,37 +372,283 @@ public class View implements ChangeListener {
 		}
 		dailyEvents.setText(text);
 	}
-	
+
 	private void updateToWeekView()
 	{
-		//fill in 
+		JDialog weekViewDialog = new JDialog(); 
+		weekViewDialog.setLayout(new BorderLayout());
+		weekViewDialog.add(new JLabel("Please enter the day you want Week View to start from"), BorderLayout.NORTH);
+
+		JPanel weekFieldPanel = new JPanel(); 
+		weekFieldPanel.add(new JLabel ("Start Day")); 
+		JTextField weekViewField = new JTextField(); 
+		weekViewField.setPreferredSize(new Dimension(30, 20));
+		weekFieldPanel.add(weekViewField);
+
+
+		JButton close = new JButton("Close");
+		close.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				weekViewDialog.dispose();
+			}
+		});
+
+
+		JButton okayButton = new JButton("Okay");
+		okayButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int startDay = Integer.parseInt(weekViewField.getText());
+				weekViewDialog.dispose();
+				int x; 
+				if (model.getTotalDays() - startDay > 7)
+				{
+					x = startDay + 7 + 1; 
+				}
+				else 
+				{
+					x = model.getTotalDays() + 1;
+				}
+				rightPanelLabel.setText(monthArray[model.getMonth()] + " "+ startDay + " to " + monthArray[model.getMonth()] + " " + (x - 1)  );
+				String text = ""; 
+				
+				for (int i = startDay; i < x; i++)
+				{
+					model.changeDay(i);
+					String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+					if (model.hasEvents(model.dayToString()))
+					{
+						text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+					}
+					dailyEvents.setText(text );
+					model.changeDay(lastSelected + 1);
+
+				}
+			}
+		});
+
+		JPanel buttonPanel = new JPanel(); 
+		buttonPanel.setLayout(new FlowLayout());
+		buttonPanel.add(okayButton);
+		buttonPanel.add(close);
+
+		weekViewDialog.add(weekFieldPanel, BorderLayout.CENTER);
+		weekViewDialog.add(buttonPanel, BorderLayout.SOUTH);
+		weekViewDialog.pack();
+		weekViewDialog.setVisible(true);
 	}
-	
+
 	private void updateToMonthView()
 	{
-		rightPanelLabel.setText("" + monthArray[model.getMonth()] + model.getYear());
+		rightPanelLabel.setText("" + monthArray[model.getMonth()] + "  " +  model.getYear());
+		/*
 		String text = ""; 
-		for (int i = 0; i < model.getTotalDays(); i++)
+		for (int i = 1; i < model.getTotalDays() + 1; i++)
 		{
 			model.changeDay(i);
 			String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
 			if (model.hasEvents(model.dayToString()))
 			{
-				text+= dateForEvent + "\n" + model.getEvents(model.dayToString());
+				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 			}
-			dailyEvents.setText(text + "NOT WORKING");
-			
-			
+			dailyEvents.setText(text);
+			model.changeDay(lastSelected + 1);
+
 		}
-	}
-	
-	private void updateToCustomView()
-	{
+		*/
+		dailyEvents.setText(getMonthText(model.getMonth()));
+		model.changeDay(lastSelected + 1);
 		
 	}
 
+	private void updateToCustomView()
+	{
+
+		JDialog customViewDialog = new JDialog(); 
+		customViewDialog.setLayout(new BorderLayout());
+		customViewDialog.add(new JLabel("Please enter start and end date"), BorderLayout.NORTH);
+
+		JPanel startDatePanel = new JPanel(); 
+		JTextField startMonthField = new JTextField(); 
+		startMonthField.setPreferredSize(new Dimension(30, 20));
+
+		JTextField startDayField = new JTextField(); 
+		startDayField.setPreferredSize(new Dimension(30, 20));
+
+		startDatePanel.add(new JLabel ("Start Month")); 
+		startDatePanel.add(startMonthField);
+		startDatePanel.add(new JLabel ("Start Day")); 
+		startDatePanel.add(startDayField);
 
 
+		JPanel endDatePanel = new JPanel(); 
+		JTextField endMonthField = new JTextField(); 
+		endMonthField.setPreferredSize(new Dimension(30, 20));
+
+		JTextField endDayField = new JTextField(); 
+		endDayField.setPreferredSize(new Dimension(30, 20));
+
+		endDatePanel.add(new JLabel ("End Month")); 
+		endDatePanel.add(endMonthField);
+		endDatePanel.add(new JLabel ("End Day")); 
+		endDatePanel.add(endDayField);	
+
+
+		JPanel fieldPanel = new JPanel(); 
+		fieldPanel.setLayout(new BorderLayout());
+		fieldPanel.add(startDatePanel, BorderLayout.NORTH);
+		fieldPanel.add(endDatePanel, BorderLayout.SOUTH);
+
+
+
+
+
+		JButton close = new JButton("Close");
+		close.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				customViewDialog.dispose();
+			}
+		});
+
+
+		JButton okayButton = new JButton("Okay");
+		okayButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int startMonth = Integer.parseInt(startMonthField.getText() );
+				int startDay = Integer.parseInt(startDayField.getText() );
+				int endMonth = Integer.parseInt(endMonthField.getText() );
+				int endDay = Integer.parseInt(endDayField.getText() );
+
+				customViewDialog.dispose();
+				String text = ""; 
+				rightPanelLabel.setText(monthArray[startMonth - 1] + " "+ startDay + " to " + monthArray[endMonth - 1] + " " + (endDay)  );
+				if (startMonth == endMonth) //same month case
+				{
+					model.changeMonth(startMonth);
+					
+					
+					for (int i = startDay; i < endDay + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+				}
+				/*
+				else if ( Math.abs(startMonth - endMonth) == 1 )
+				{
+					model.changeMonth(startMonth);
+					for (int i = model.getDay(); i < model.getTotalDays() + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+					
+					model.changeMonth(endMonth);
+					
+				
+					
+					
+					for (int i = 1; i < endDay + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+				}
+				*/
+				else //more than 2 months
+				{
+					int currentMonth = startMonth; 
+					model.changeMonth(startMonth);
+					for (int i = model.getDay(); i < model.getTotalDays() + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+					currentMonth++; 
+					
+					while (currentMonth < endMonth)
+						
+					{
+						model.changeMonth(currentMonth);
+						text+= getMonthText(currentMonth);
+						currentMonth++; 
+					}
+					
+						model.changeMonth(endMonth);
+										
+					
+					for (int i = 1; i < endDay + 1; i++)
+					{
+						model.changeDay(i);
+						String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+						if (model.hasEvents(model.dayToString()))
+						{
+							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+						}
+					}
+					
+				}
+				dailyEvents.setText(text );
+				model.changeDay(lastSelected + 1);
+				
+			}
+		});
+		JPanel buttonPanel = new JPanel(); 
+		buttonPanel.setLayout(new FlowLayout());
+		buttonPanel.add(okayButton);
+		buttonPanel.add(close);
+
+		customViewDialog.add(fieldPanel, BorderLayout.CENTER);
+		customViewDialog.add(buttonPanel, BorderLayout.SOUTH);
+		customViewDialog.pack();
+		customViewDialog.setVisible(true);
+	}
+
+	/**
+	 * Gives the user the text for all the events in a month
+	 * @param month is the month you want
+	 * @return a String that is formatted events text for the whole month
+	 */
+	public String getMonthText(int month)
+	{
+		model.changeMonth(month + 1);
+	
+		String text = ""; 
+		for (int i = 1; i < model.getTotalDays() + 1; i++)
+		{
+			model.changeDay(i);
+			String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
+			if (model.hasEvents(model.dayToString()))
+			{
+				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
+			}
+		}
+		return text;
+ 
+	}
 	/**
 	 * Creates a thick border to highlight a certain day
 	 * @param x is the day to highLight
@@ -425,7 +683,7 @@ public class View implements ChangeListener {
 	}
 
 
-	
+
 	/**
 	 * Creates the eventDialog that pops up when you hit the addEvent button 
 	 */
@@ -497,7 +755,7 @@ public class View implements ChangeListener {
 
 						model.addEvent(name.getText(), start.getText(), end.getText());
 						updateDayViewText(model.getDay());
-						
+
 					}
 				}
 			}
@@ -533,7 +791,7 @@ public class View implements ChangeListener {
 		JPanel buttonPanel = new JPanel(); 
 		buttonPanel.add(addButton);
 		buttonPanel.add(exitButton);
-		
+
 		eventDialog.add(buttonPanel);
 		eventDialog.add(fieldPanel, BorderLayout.WEST);
 		eventDialog.add(buttonPanel, BorderLayout.EAST);
