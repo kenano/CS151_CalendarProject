@@ -86,14 +86,15 @@ public class Model
 		calendar.set(Calendar.MONTH, todaysMonth);
 		calendar.set(Calendar.YEAR, todaysYear);
 		
-		/*
+		
 		System.out.println(todaysDay);
 		System.out.println(todaysMonth);
 		System.out.println(todaysYear);
-		*/
+		
 		update(); 
 	}
 
+	
 	/**
 	 * 
 	 * @return the strategy of the model

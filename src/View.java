@@ -199,6 +199,8 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				model.changeToToday();
+				remakeMiniCalendar(); 
+				highlightSelectedDay(model.getDay() + 2);
 
 			}
 		}
@@ -310,6 +312,7 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				updateToWeekView();
+				remakeMiniCalendar();
 
 			}
 		}
@@ -322,6 +325,7 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				updateToMonthView();
+				remakeMiniCalendar();
 
 			}
 		}
@@ -334,6 +338,7 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				updateToCustomView();
+				remakeMiniCalendar();
 
 			}
 		}
@@ -563,6 +568,7 @@ public class View implements ChangeListener {
 				}
 			}
 		});
+		
 
 		JPanel buttonPanel = new JPanel(); 
 		buttonPanel.setLayout(new FlowLayout());
