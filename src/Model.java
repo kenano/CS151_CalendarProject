@@ -34,6 +34,8 @@ public class Model
 	private final int todaysDay;
 	private final int todaysMonth; 
 	private final int todaysYear; 
+	
+	private Strategy selectedStrategy; 
 
 	/**
 	 * Constructor for the model which initiates totalDays, selectedDay, and loads events that have been added if they exist
@@ -48,6 +50,7 @@ public class Model
 		todaysDay = calendar.get(Calendar.DATE);
 		todaysMonth = calendar.get(Calendar.MONTH); 
 		todaysYear = calendar.get(Calendar.YEAR); 
+		selectedStrategy = new strategy1SmallBlue(); 
 		
 		
 		load();
@@ -83,18 +86,36 @@ public class Model
 		calendar.set(Calendar.MONTH, todaysMonth);
 		calendar.set(Calendar.YEAR, todaysYear);
 		
-		/*
+		
 		System.out.println(todaysDay);
 		System.out.println(todaysMonth);
 		System.out.println(todaysYear);
-		*/
+		
 		update(); 
 	}
 
+	
+	/**
+	 * 
+	 * @return the strategy of the model
+	 */
+	public Strategy getStrategy()
+	{
+		return selectedStrategy;
+	}
 	/**
 	 * Tells user the year
 	 * @return the year the calendar is at
 	 */
+	
+	/**
+	 * Changes the model's strategy
+	 * @param s is what you are changing it to
+	 */
+	public void changeStrategy(Strategy s)
+	{
+		selectedStrategy = s; 
+	}
 	public int getYear()
 	{
 		return calendar.get(Calendar.YEAR); 
