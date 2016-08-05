@@ -566,15 +566,6 @@ public class Model
 							System.out.println("Adding recurring event. Event ArrayList appended and eventMap updated");
 						}
 
-//						updated.add(new_event);
-//
-//						Collections.sort(updated, sortTimeComparator());
-//
-//						eventMap.put(Integer.toString(event_date.get(Calendar.MONTH)) +
-//								event_date.get(Calendar.DATE) +
-//								event_date.get(Calendar.YEAR), updated); //update arrayList in map
-
-
 						System.out.println("There was a event conflint when loading recurring events.");
 
 					}else{
@@ -603,29 +594,17 @@ public class Model
 				}
 			}
 		}
-
-
-
-
-
 	}
 
 	/**
-	 * Checks whether an event conflicts with any of the existing events
+	 * Checks whether an event conflicts with any of the existing events. This method specifically checks for recurring
+	 * events being added.
+	 * @param date_being_checked the date being checked for a recurring event.
 	 * @param newEvent is the event you are comparing with existing events
 	 * @return a boolean representing whether or not there is a conflict
 	 */
 	public boolean hasRecurringEventConflict(GregorianCalendar date_being_checked, Event newEvent)
 	{
-
-//		if (hasEvents(dayToString()) == false) // if no events that day, no conflict
-//		{
-//			return false;
-//		}
-
-//		ArrayList<Event>events = eventMap.get(dayToString());  // retrieve arrayList for the day
-
-//		String key = date_being_checked.get(Calendar.MONTH) + date_being_checked.get(Calendar.DATE), date_being_checked.get(Calendar.YEAR)
 
 		String key = Integer.toString(date_being_checked.get(Calendar.MONTH))
 				+ Integer.toString(date_being_checked.get(Calendar.DATE))

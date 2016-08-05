@@ -1,0 +1,2 @@
+English Class;2016;1;12;SMTWHFA;01;11;
+Math Class;2016;3;7;MWF;12;18;
