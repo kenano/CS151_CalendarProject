@@ -45,9 +45,6 @@ public class Model
 	 */
 	public Model() 
 	{
-		//test loading file.
-		loadRecurringEventsFile();
-
 		totalDays = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		selectedDay = calendar.get(Calendar.DATE);
 		selectedMonth = calendar.get(Calendar.MONTH); 
@@ -59,6 +56,9 @@ public class Model
 		
 		
 		load();
+
+		//test loading file.
+		loadRecurringEventsFile();
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class Model
 
 	/**
 	 * Turns the day into a string (this will also serve as the key
-	 * @return a string that in the form of month day year concatenated 
+	 * @return a string that in the form of month day year concatenated
 	 */
 	public String dayToString()
 	{
@@ -519,45 +519,117 @@ public class Model
 				Integer date = dates_in_month.next();
 				event_date.set(Calendar.DATE, date);
 
+				//check if the currently being iterated through is one of the "days of the week" specified
+				//as a recurring event.
 				if(days.contains(event_date.get(Calendar.DAY_OF_WEEK))){
-					System.out.println("recurring event date:" + event_date.getTime().toString());
 
-					//make a new arrayList for the days events.
-					ArrayList<Event> events = new ArrayList<>();
+					if (hasEvents(Integer.toString(event_date.get(Calendar.MONTH)) + event_date.get(Calendar.DATE) +
+							event_date.get(Calendar.YEAR))){
+						ArrayList<Event> updated = eventMap.get(Integer.toString(event_date.get(Calendar.MONTH)) +
+								event_date.get(Calendar.DATE) +
+								event_date.get(Calendar.YEAR));
 
-					//create a new event
-					Event new_event = new Event(title, start_hour + ":00", end_hour + ":00");
-
-					//add the event to events.
-					events.add(new_event);
+						//create a new event
+						Event new_event = new Event(title, start_hour + ":00", end_hour + ":00");
 
 
-					//construct key string
-					String key = Integer.toString(event_date.get(Calendar.MONTH))
-							+ Integer.toString(event_date.get(Calendar.DATE))
-							+ Integer.toString(event_date.get(Calendar.YEAR));
+						if(!hasRecurringEventConflict(event_date, new_event)){
+							updated.add(new_event);
 
-					//add events to hash map, use get.calendar to construct key.
-					eventMap.put(key, events);
+							Collections.sort(updated, sortTimeComparator());
+
+							eventMap.put(Integer.toString(event_date.get(Calendar.MONTH)) +
+									event_date.get(Calendar.DATE) +
+									event_date.get(Calendar.YEAR), updated); //update arrayList in map
+							System.out.println("Adding recurring event. Event ArrayList appended and eventMap updated");
+						}
+
+//						updated.add(new_event);
+//
+//						Collections.sort(updated, sortTimeComparator());
+//
+//						eventMap.put(Integer.toString(event_date.get(Calendar.MONTH)) +
+//								event_date.get(Calendar.DATE) +
+//								event_date.get(Calendar.YEAR), updated); //update arrayList in map
+
+
+						System.out.println("There was a event conflint when loading recurring events.");
+
+					}else{
+						//make a new arrayList for the days events.
+						ArrayList<Event> events = new ArrayList<>();
+
+						//create a new event
+						Event new_event = new Event(title, start_hour + ":00", end_hour + ":00");
+
+						//add the event to events.
+						events.add(new_event);
+
+
+						//construct key string
+						String key = Integer.toString(event_date.get(Calendar.MONTH))
+								+ Integer.toString(event_date.get(Calendar.DATE))
+								+ Integer.toString(event_date.get(Calendar.YEAR));
+
+						//add events to hash map, use get.calendar to construct key.
+						eventMap.put(key, events);
+
+						System.out.println("Adding recurring event. Event ArrayList created and eventMap updated");
+
+					}
+
 				}
 			}
 		}
 
 
 
-//		Iterator<Integer> dates_in_month =
-//				SimpleCalendarUtilitiles.datesInMonth(event_date.getActualMaximum(Calendar.DAY_OF_MONTH));
-//
-//		while(dates_in_month.hasNext()){
-//
-//			Integer date = dates_in_month.next();
-//			event_date.set(Calendar.DATE, date);
-//
-//			if(days.contains(event_date.get(Calendar.DAY_OF_WEEK))){
-//				System.out.println("recurring event date:" + event_date.getTime().toString());
-//			}
+
+
+	}
+
+	/**
+	 * Checks whether an event conflicts with any of the existing events
+	 * @param newEvent is the event you are comparing with existing events
+	 * @return a boolean representing whether or not there is a conflict
+	 */
+	public boolean hasRecurringEventConflict(GregorianCalendar date_being_checked, Event newEvent)
+	{
+
+//		if (hasEvents(dayToString()) == false) // if no events that day, no conflict
+//		{
+//			return false;
 //		}
 
+//		ArrayList<Event>events = eventMap.get(dayToString());  // retrieve arrayList for the day
+
+//		String key = date_being_checked.get(Calendar.MONTH) + date_being_checked.get(Calendar.DATE), date_being_checked.get(Calendar.YEAR)
+
+		String key = Integer.toString(date_being_checked.get(Calendar.MONTH))
+				+ Integer.toString(date_being_checked.get(Calendar.DATE))
+				+ Integer.toString(date_being_checked.get(Calendar.YEAR));
+
+		ArrayList<Event>events = eventMap.get(key);  // retrieve arrayList for the day
+
+
+		int startTime1 = timeToMinutes(newEvent.getStart()); //convert start and end times to minutes
+		int endTime1 = timeToMinutes(newEvent.getEnd());
+
+		for (Event event : events)  //for every event in the arraylist
+		{
+			int startTime2 = timeToMinutes(event.getStart()); //convert start/end times to minutes
+			int endTime2 = timeToMinutes(event.getEnd());
+
+			if (startTime1 >= startTime2 && startTime1 < endTime2 ) //event1 (the one being added) starts after event2, but before event2 ends
+			{
+				return true;
+			}
+			else if (startTime1 <= startTime2 && endTime1 > startTime2) //event1 starts before event2, but ends after event2 begins
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

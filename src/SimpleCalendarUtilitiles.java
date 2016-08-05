@@ -46,7 +46,7 @@ public class SimpleCalendarUtilitiles {
 
             @Override
             public boolean hasNext() {
-                if(current_month <= Calendar.DECEMBER)
+                if(current_month < Calendar.DECEMBER)
                     return true;
                 else
                     return false;
