@@ -468,7 +468,7 @@ public class Model
 		return ( Integer.valueOf(time.substring(0,2)) * 60 ) + Integer.valueOf(time.substring(3)); 
 	}
 
-	private void loadRecurringEventsFile(){
+	public void loadRecurringEventsFile(){
 		File recurring_events_file = new File(RECURRING_EVENTS_FILE_NAME);
 
 		try {
@@ -634,3 +634,4 @@ public class Model
 	}
 
 }
+

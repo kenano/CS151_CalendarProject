@@ -40,7 +40,7 @@ public class View implements ChangeListener {
 	private MONTHS[] monthArray = MONTHS.values();
 
 
-	private JFrame frame = new JFrame("Chien Simple GUI Calendar");
+	private JFrame frame = new JFrame("CKR GUI Calendar");
 
 	//MiniCalendar (Left)
 	private JPanel miniCalendarPanel = new JPanel();
@@ -62,10 +62,11 @@ public class View implements ChangeListener {
 
 	//View Button Panel 
 	private JPanel viewButtonsPanel = new JPanel();
-	private JButton dayViewButton = new JButton("    Day   ");
-	private JButton weekViewButton = new JButton("  Week  ");
-	private JButton monthViewButton = new JButton(" Month  ");
-	private JButton customViewButton = new JButton("Custom");
+	private JButton loadEventsButton = new JButton( "Load Events"); 
+	private JButton dayViewButton = new JButton("         Day       ");
+	private JButton weekViewButton = new JButton("      Week      ");
+	private JButton monthViewButton = new JButton("     Month      ");
+	private JButton customViewButton = new JButton("    Custom    ");
 
 	//Daily View (Right)
 	private JTextPane dailyEvents = new JTextPane();
@@ -198,9 +199,12 @@ public class View implements ChangeListener {
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				
+				
 				model.changeToToday();
-				remakeMiniCalendar(); 
-				highlightSelectedDay(model.getDay() + 2);
+				remakeMiniCalendar();
+				updateDayViewText(model.getDay());
+				
 
 			}
 		}
@@ -293,6 +297,19 @@ public class View implements ChangeListener {
 		//View buttons panel
 		viewButtonsPanel.setLayout(new BoxLayout(viewButtonsPanel, BoxLayout.Y_AXIS));
 		
+		loadEventsButton.setBackground(model.getStrategy().getButtonColor());
+		loadEventsButton.addActionListener( new 
+				ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				model.loadRecurringEventsFile(); 
+				
+
+			}
+		}
+				);
+		
 		dayViewButton.setBackground(model.getStrategy().getButtonColor());
 		dayViewButton.addActionListener( new 
 				ActionListener()
@@ -325,8 +342,7 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				updateToMonthView();
-				remakeMiniCalendar();
-
+				
 			}
 		}
 				);
@@ -343,6 +359,7 @@ public class View implements ChangeListener {
 			}
 		}
 				);
+		viewButtonsPanel.add(loadEventsButton);
 		viewButtonsPanel.add(dayViewButton);
 		viewButtonsPanel.add(weekViewButton);
 		viewButtonsPanel.add(monthViewButton);
@@ -509,6 +526,8 @@ public class View implements ChangeListener {
 		}
 		dailyEvents.setText(text);
 		changeFont(frame, model.getStrategy().getFont());
+		
+		
 	}
 
 	private void updateToWeekView()
@@ -700,14 +719,14 @@ public class View implements ChangeListener {
 							text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 						}
 					}
-					currentMonth++; 
-					
+					 
+					currentMonth++;
 					while (currentMonth < endMonth)
 						
 					{
 						model.changeMonth(currentMonth);
-						text+= getMonthText(currentMonth);
-						currentMonth++; 
+						text+= getMonthText(currentMonth - 1);
+						currentMonth++;
 					}
 					
 						model.changeMonth(endMonth);
