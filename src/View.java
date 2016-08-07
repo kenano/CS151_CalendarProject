@@ -530,8 +530,13 @@ public class View implements ChangeListener {
 		
 	}
 
+	/**
+	 * Updates the dayView text to a week view by asking user for the start date. If there are less than 7 days before the end of the month, less than 7 days worth of events will be shown
+	 */
 	private void updateToWeekView()
 	{
+		int beforeMonth = model.getMonth(); 
+		int beforeDay = model.getDay(); 
 		JDialog weekViewDialog = new JDialog(); 
 	
 		weekViewDialog.setLayout(new BorderLayout());
@@ -582,11 +587,13 @@ public class View implements ChangeListener {
 						text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 					}
 					dailyEvents.setText(text );
-					model.changeDay(lastSelected + 1);
+					
 
 				}
 			}
 		});
+		model.changeDay(beforeDay);
+		model.changeMonth(beforeMonth + 1);
 		
 
 		JPanel buttonPanel = new JPanel(); 
@@ -597,34 +604,31 @@ public class View implements ChangeListener {
 		weekViewDialog.add(weekFieldPanel, BorderLayout.CENTER);
 		weekViewDialog.add(buttonPanel, BorderLayout.SOUTH);
 		changeFont(weekViewDialog, model.getStrategy().getFont());
+		
 		weekViewDialog.pack();
 		weekViewDialog.setVisible(true);
 	}
 
+	/**
+	 * Updates the dayView text to a Month view which shows all the events in the month
+	 */
 	private void updateToMonthView()
+	
 	{
+		int beforeMonth = model.getMonth(); 
+		int beforeDay = model.getDay(); 
 		rightPanelLabel.setText("" + monthArray[model.getMonth()] + "  " +  model.getYear());
-		/*
-		String text = ""; 
-		for (int i = 1; i < model.getTotalDays() + 1; i++)
-		{
-			model.changeDay(i);
-			String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
-			if (model.hasEvents(model.dayToString()))
-			{
-				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
-			}
-			dailyEvents.setText(text);
-			model.changeDay(lastSelected + 1);
-
-		}
-		*/
-		dailyEvents.setText(getMonthText(model.getMonth()));
-		model.changeDay(lastSelected + 1);
 		
+		dailyEvents.setText(getMonthText(model.getMonth()));
+	
+		model.changeDay(beforeDay);
+		model.changeMonth(beforeMonth + 1);
 		
 	}
 
+	/**
+	 * Updates the dayView text to a custom range. The user will be asked to enter a start/ end month and day within the same year and events in that range will be shown
+	 */
 	private void updateToCustomView()
 	{
 
@@ -779,6 +783,7 @@ public class View implements ChangeListener {
 				text+= dateForEvent + "\n" + model.getEvents(model.dayToString()) + "\n";
 			}
 		}
+			
 		return text;
  
 	}

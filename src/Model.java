@@ -22,7 +22,7 @@ import javax.swing.event.ChangeListener;
  * @author Cameron Chien 
  *
  */
-//aosfhasfa
+
 public class Model
 {
 	final static private String RECURRING_EVENTS_FILE_NAME = "input.txt";
@@ -61,8 +61,7 @@ public class Model
 		
 		load();
 
-		//test loading file.
-//		loadRecurringEventsFile();
+		
 	}
 
 	/**
@@ -84,6 +83,9 @@ public class Model
 		}
 	}
 	
+	/**
+	 * Changes the day to "Today" 
+	 */
 	public void changeToToday()
 	{
 		
@@ -95,10 +97,6 @@ public class Model
 		calendar.set(Calendar.MONTH, todaysMonth);
 		calendar.set(Calendar.YEAR, todaysYear);
 		
-		
-		System.out.println(todaysDay);
-		System.out.println(todaysMonth);
-		System.out.println(todaysYear);
 		
 		update(); 
 	}
@@ -112,10 +110,7 @@ public class Model
 	{
 		return selectedStrategy;
 	}
-	/**
-	 * Tells user the year
-	 * @return the year the calendar is at
-	 */
+
 	
 	/**
 	 * Changes the model's strategy
@@ -168,28 +163,15 @@ public class Model
 	{
 		selectedMonth = x; 
 		calendar.set(Calendar.MONTH, x - 1);
-		 /*
-		int difference = calendar.get(Calendar.MONTH - x);
-		if (difference > 0)
-		{
-			for (int i = 0; i < difference ; i ++)
-			{
-				previousMonth();
-			}
-		}
-		else
-		{
-			for (int i = 0; i < difference - 1; i ++)
-			{
-				nextMonth();
-			}
-		}
-		*/
-		
+	
 		
 		
 	}
 	
+	/**
+	 * Changes the year 
+	 * @param x
+	 */
 	public void changeYear(int x)
 	{
 		selectedYear = x; 
@@ -468,9 +450,6 @@ public class Model
 		return ( Integer.valueOf(time.substring(0,2)) * 60 ) + Integer.valueOf(time.substring(3)); 
 	}
 
-	/**
-	 * Loads input file which contains recurring events. Parses file. Adds recurring events to the calendar.
-	 */
 	public void loadRecurringEventsFile(){
 		File recurring_events_file = new File(RECURRING_EVENTS_FILE_NAME);
 
@@ -489,12 +468,13 @@ public class Model
 			e.printStackTrace();
 		}
 
-		//update UI Views
-		update();
-
 
 	}
 
+	/**
+	 * Creates a recurring event 
+	 * @param recurring_event_attributes is an array of Strings representing various characteristics of the recurring event
+	 */
 	private void createRecurringEvent(String[] recurring_event_attributes){
 
 		String title = recurring_event_attributes[0];
@@ -569,7 +549,10 @@ public class Model
 							eventMap.put(Integer.toString(event_date.get(Calendar.MONTH)) +
 									event_date.get(Calendar.DATE) +
 									event_date.get(Calendar.YEAR), updated); //update arrayList in map
+							System.out.println("Adding recurring event. Event ArrayList appended and eventMap updated");
 						}
+
+						System.out.println("There was a event conflint when loading recurring events.");
 
 					}else{
 						//make a new arrayList for the days events.
@@ -589,14 +572,24 @@ public class Model
 
 						//add events to hash map, use get.calendar to construct key.
 						eventMap.put(key, events);
+
+						System.out.println("Adding recurring event. Event ArrayList created and eventMap updated");
+
 					}
+
 				}
 			}
 		}
 	}
 
-
-	private boolean hasRecurringEventConflict(GregorianCalendar date_being_checked, Event newEvent)
+	/**
+	 * Checks whether an event conflicts with any of the existing events. This method specifically checks for recurring
+	 * events being added.
+	 * @param date_being_checked the date being checked for a recurring event.
+	 * @param newEvent is the event you are comparing with existing events
+	 * @return a boolean representing whether or not there is a conflict
+	 */
+	public boolean hasRecurringEventConflict(GregorianCalendar date_being_checked, Event newEvent)
 	{
 
 		String key = Integer.toString(date_being_checked.get(Calendar.MONTH))
