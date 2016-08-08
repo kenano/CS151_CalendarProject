@@ -178,6 +178,8 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				model.nextMonth();
+				updateDayViewText(1);
+				highlightSelectedDay(0);
 
 			}
 		}
@@ -189,6 +191,8 @@ public class View implements ChangeListener {
 			public void actionPerformed(ActionEvent e)
 			{
 				model.previousMonth();
+				updateDayViewText(1);
+				highlightSelectedDay(0);
 
 			}
 		}
@@ -204,6 +208,7 @@ public class View implements ChangeListener {
 				model.changeToToday();
 				remakeMiniCalendar();
 				updateDayViewText(model.getDay());
+				highlightSelectedDay(model.getDay() - 1);
 				
 
 			}
@@ -420,7 +425,10 @@ public class View implements ChangeListener {
 			}
 		}
 	}
-	@Override
+	
+	/**
+	 * Remakes the calendar or updates the day when there is a ChangeEvent
+	 */
 	public void stateChanged(ChangeEvent e) {
 	
 		if (model.getMonthChange()) 
@@ -437,6 +445,10 @@ public class View implements ChangeListener {
 			
 		}
 	}
+	
+	/**
+	 * Remakes the mini calendar
+	 */
 	public void remakeMiniCalendar()
 	{
 		totalDays = model.getTotalDays();
@@ -454,8 +466,6 @@ public class View implements ChangeListener {
 		createDayButtons();
 		addBlankButtons();
 		addDayButtons();
-		updateDayViewText(1);
-		model.changeDay(1); 
 		lastSelected = -1;
 		model.resetMonthChange();
 		frame.pack();
@@ -581,6 +591,7 @@ public class View implements ChangeListener {
 				for (int i = startDay; i < x; i++)
 				{
 					model.changeDay(i);
+					highlightSelectedDay(i - 1);
 					String dateForEvent = dayArray[model.getDayOfWeek(model.getDay()) - 1] + " " + monthArray[model.getMonth()] + " " +  model.getDay() + ", " + model.getYear();  
 					if (model.hasEvents(model.dayToString()))
 					{
