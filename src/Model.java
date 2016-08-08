@@ -450,6 +450,9 @@ public class Model
 		return ( Integer.valueOf(time.substring(0,2)) * 60 ) + Integer.valueOf(time.substring(3)); 
 	}
 
+	/**
+	 * loads recurring events file, parses it, adds events to model.
+	 */
 	public void loadRecurringEventsFile(){
 		File recurring_events_file = new File(RECURRING_EVENTS_FILE_NAME);
 
@@ -468,7 +471,8 @@ public class Model
 			e.printStackTrace();
 		}
 
-
+		//update the views.
+		update();
 	}
 
 	/**
@@ -549,10 +553,10 @@ public class Model
 							eventMap.put(Integer.toString(event_date.get(Calendar.MONTH)) +
 									event_date.get(Calendar.DATE) +
 									event_date.get(Calendar.YEAR), updated); //update arrayList in map
-							System.out.println("Adding recurring event. Event ArrayList appended and eventMap updated");
+//							System.out.println("Adding recurring event. Event ArrayList appended and eventMap updated");
 						}
 
-						System.out.println("There was a event conflint when loading recurring events.");
+//						System.out.println("There was a event conflint when loading recurring events.");
 
 					}else{
 						//make a new arrayList for the days events.
@@ -573,7 +577,7 @@ public class Model
 						//add events to hash map, use get.calendar to construct key.
 						eventMap.put(key, events);
 
-						System.out.println("Adding recurring event. Event ArrayList created and eventMap updated");
+//						System.out.println("Adding recurring event. Event ArrayList created and eventMap updated");
 
 					}
 
